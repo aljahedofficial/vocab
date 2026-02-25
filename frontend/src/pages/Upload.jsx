@@ -6,6 +6,9 @@ import api from "../lib/api";
 const Upload = () => {
     const [file, setFile] = useState(null);
     const [step, setStep] = useState(0); // 0: idle, 1: uploading, 2: processing, 3: done
+    const [error, setError] = useState("");
+    const [uploading, setUploading] = useState(false);
+    const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
 
     const handleFileChange = (e) => {
