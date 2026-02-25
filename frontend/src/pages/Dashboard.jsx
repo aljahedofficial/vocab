@@ -1,4 +1,4 @@
-import { ArrowRight, Clock, Download, FileDown, FileSpreadsheet, FileText, Languages, Loader2, Sparkles, Users } from "lucide-react";
+import { ArrowRight, Clock, Download, FileDown, FileSpreadsheet, FileText, Languages, Loader2, Sparkles, Trash2, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import DocumentCharts from "../components/DocumentCharts";
