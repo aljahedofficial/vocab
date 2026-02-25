@@ -128,7 +128,8 @@ def get_document_words(
         (UserTranslation.word == WordFrequency.word) & (UserTranslation.user_id == current_user.id)
     ).filter(WordFrequency.document_id == doc_id).order_by(WordFrequency.frequency.desc()).all()
     
-    return results
+    # Map to dictionary to ensure Pydantic compatibility
+    return [{"word": r[0], "frequency": r[1], "translation": r[2]} for r in results]
 
 @router.get("/{doc_id}/export/{format}")
 def export_document_data(
@@ -143,8 +144,6 @@ def export_document_data(
         raise HTTPException(status_code=404, detail="Document not found")
     
     # Get word frequencies and join with translations if they exist
-    # word_freqs = db.query(WordFrequency).filter(WordFrequency.document_id == doc_id).all()
-    # To get translations, we join UserTranslation on word
     results = db.query(
         WordFrequency.word,
         WordFrequency.frequency,
@@ -180,30 +179,39 @@ def export_document_data(
         pdf = FPDF()
         
         # Register Bengali font if it exists
-        if os.path.exists(FONT_PATH):
-            pdf.add_font("Bengali", "", FONT_PATH)
-            font_family = "Bengali"
+        bengali_font_path = FONT_PATH
+        if os.path.exists(bengali_font_path):
+            try:
+                # In fpdf2, we just pass the path and a name
+                pdf.add_font("Bengali", style="", fname=bengali_font_path)
+                font_family = "Bengali"
+            except Exception as e:
+                print(f"Font Load Error: {e}")
+                font_family = "Arial"
         else:
             font_family = "Arial"
 
         pdf.add_page()
-        pdf.set_font(font_family, "B" if font_family == "Arial" else "", 16)
+        # Set font for title
+        pdf.set_font(font_family, size=16)
         pdf.cell(0, 10, f"Vocabulary Analysis: {doc.filename}", ln=True, align="C")
         pdf.ln(10)
         
-        pdf.set_font(font_family, "B" if font_family == "Arial" else "", 12)
+        # Table Header
+        pdf.set_font(font_family, size=12)
         pdf.cell(80, 10, "Word", border=1)
         pdf.cell(40, 10, "Freq", border=1)
         pdf.cell(70, 10, "Translation", border=1)
         pdf.ln()
         
-        pdf.set_font(font_family, "", 12)
+        # Table Content
+        pdf.set_font(font_family, size=10)
         for _, row in df.head(100).iterrows(): # Limit PDF to top 100
             pdf.cell(80, 10, str(row["Word"]), border=1)
             pdf.cell(40, 10, str(row["Frequency"]), border=1)
             
             translation = str(row["Translation"])
-            # In fpdf2, we can just use the translation string if the font supports it
+            # In fpdf2, standard strings work if the font supports it
             pdf.cell(70, 10, translation if translation != "-" else "", border=1)
             pdf.ln()
             

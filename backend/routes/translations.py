@@ -90,20 +90,29 @@ def batch_translate(
         return []
 
     try:
-        for word in words_to_translate:
-            try:
-                translated = translator.translate(word)
-                if translated:
-                    new_trans = UserTranslation(
-                        user_id=current_user.id,
-                        word=word,
-                        translation=translated
-                    )
-                    db.add(new_trans)
-                    new_translations.append(new_trans)
-            except Exception as e:
-                print(f"Failed to translate {word}: {e}")
-                continue
+        # Use translate_batch if the list is small enough, or chunk it
+        # deep-translator's GoogleTranslator supports translate_batch
+        try:
+            translations = translator.translate_batch(words_to_translate)
+        except Exception as e:
+            print(f"Batch translation error: {e}")
+            # Fallback to individual translation if batch fails
+            translations = []
+            for word in words_to_translate:
+                try:
+                    translations.append(translator.translate(word))
+                except:
+                    translations.append(None)
+
+        for word, translated in zip(words_to_translate, translations):
+            if translated:
+                new_trans = UserTranslation(
+                    user_id=current_user.id,
+                    word=word,
+                    translation=translated
+                )
+                db.add(new_trans)
+                new_translations.append(new_trans)
         
         db.commit()
         for t in new_translations:
