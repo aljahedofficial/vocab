@@ -48,11 +48,28 @@ const Dashboard = () => {
         }
     };
 
+    const handleReanalyze = async () => {
+        if (!selectedDoc) return;
+        try {
+            setDataLoading(true);
+            await api.post(`/documents/${selectedDoc.id}/process`);
+            await fetchDocData(selectedDoc.id);
+            alert("Analysis refreshed with new filtering rules!");
+        } catch (err) {
+            console.error("Re-analysis failed", err);
+            alert("Failed to re-analyze. Please try again.");
+        } finally {
+            setDataLoading(false);
+        }
+    };
+
+    const totalWords = docData.reduce((sum, item) => sum + item.frequency, 0);
+
     const stats = [
         { label: "Total Documents", value: documents.length.toString(), icon: FileText, color: "text-blue-600", bg: "bg-blue-50" },
-        { label: "Total Words", value: "Calculated", icon: Languages, color: "text-purple-600", bg: "bg-purple-50" },
-        { label: "Unique Authors", value: "1", icon: Users, color: "text-green-600", bg: "bg-green-50" },
-        { label: "Active Sessions", value: "1", icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
+        { label: "Unique Vocabulary", value: selectedDoc ? docData.length.toString() : "...", icon: Languages, color: "text-purple-600", bg: "bg-purple-50" },
+        { label: "Total Word Hits", value: selectedDoc ? totalWords.toLocaleString() : "...", icon: Users, color: "text-green-600", bg: "bg-green-50" },
+        { label: "Translations", value: selectedDoc ? docData.filter(d => d.translation).length : "...", icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
     ];
 
     const handleBatchTranslate = async () => {
@@ -134,6 +151,15 @@ const Dashboard = () => {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
+                        <button
+                            onClick={handleReanalyze}
+                            disabled={dataLoading}
+                            className={`p-3 bg-white border border-gray-200 rounded-2xl hover:border-blue-400 hover:text-blue-600 transition-all shadow-sm group relative ${dataLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                            title="Re-analyze with new filters"
+                        >
+                            <Loader2 className={`w-5 h-5 ${dataLoading ? "animate-spin" : ""}`} />
+                            <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none uppercase whitespace-nowrap">Clean & Refresh</span>
+                        </button>
                         <button
                             onClick={() => handleExport('csv')}
                             className="p-3 bg-white border border-gray-200 rounded-2xl hover:border-blue-400 hover:text-blue-600 transition-all shadow-sm group relative"
