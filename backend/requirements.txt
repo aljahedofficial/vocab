@@ -18,3 +18,4 @@ httpx
 pytest-asyncio
 email-validator
 deep-translator
+uharfbuzz

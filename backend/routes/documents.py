@@ -184,6 +184,7 @@ def export_document_data(
             try:
                 # In fpdf2, we just pass the path and a name
                 pdf.add_font("Bengali", style="", fname=bengali_font_path)
+                pdf.set_text_shaping(True) # Enable shaping for ligatures
                 font_family = "Bengali"
             except Exception as e:
                 print(f"Font Load Error: {e}")

@@ -24,9 +24,15 @@ const Translations = () => {
     };
 
     const handleDelete = async (id) => {
-        // Implementation for delete route would go here if needed
-        // For now, let's keep it simple as a placeholder
-        alert("Delete functionality will be added in the next polish update.");
+        if (!window.confirm("Are you sure you want to remove this word from your dictionary?")) return;
+
+        try {
+            await api.delete(`/translations/${id}`);
+            setTranslations(translations.filter(t => t.id !== id));
+        } catch (err) {
+            console.error("Failed to delete translation", err);
+            alert("Failed to delete. Please try again.");
+        }
     };
 
     const filtered = translations.filter(t =>
