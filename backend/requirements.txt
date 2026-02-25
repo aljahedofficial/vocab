@@ -12,4 +12,7 @@ passlib[bcrypt]
 python-dotenv
 pandas
 openpyxl
-reportlab
+fpdf2
+pytest
+httpx
+pytest-asyncio
