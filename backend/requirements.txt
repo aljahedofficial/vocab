@@ -17,3 +17,4 @@ pytest
 httpx
 pytest-asyncio
 email-validator
+deep-translator
