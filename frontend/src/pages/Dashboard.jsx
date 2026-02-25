@@ -80,6 +80,22 @@ const Dashboard = () => {
         }
     };
 
+    const handleDelete = async (e, id) => {
+        e.stopPropagation(); // Prevent opening the document
+        if (!window.confirm("Are you sure you want to delete this document? This will free up storage space in your bucket.")) return;
+
+        try {
+            await api.delete(`/documents/${id}`);
+            setDocuments(documents.filter(doc => doc.id !== id));
+            if (selectedDoc?.id === id) {
+                setSelectedDoc(null);
+            }
+        } catch (err) {
+            console.error("Deletion failed", err);
+            alert("Failed to delete the document. Please try again.");
+        }
+    };
+
     const handleExport = async (format) => {
         try {
             const response = await api.get(`/documents/${selectedDoc.id}/export/${format}`, {
@@ -229,7 +245,16 @@ const Dashboard = () => {
                                         <p className="text-xs text-gray-500 mt-1 uppercase">{doc.file_type.split("/")[1]}</p>
                                     </div>
                                 </div>
-                                <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={(e) => handleDelete(e, doc.id)}
+                                        className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                                        title="Delete Document"
+                                    >
+                                        <Trash2 className="w-5 h-5" />
+                                    </button>
+                                    <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                                </div>
                             </div>
                         </div>
                     ))}

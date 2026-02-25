@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Response
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Response, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -209,3 +209,30 @@ def export_document_data(
 
     else:
         raise HTTPException(status_code=400, detail="Unsupported export format")
+@router.delete("/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_document(
+    doc_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # 1. Verify ownership and get document
+    doc = db.query(Document).filter(Document.id == doc_id, Document.user_id == current_user.id).first()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # 2. Remove from Supabase Storage
+    try:
+        supabase.storage.from_("documents").remove([doc.storage_path])
+    except Exception as e:
+        # We continue even if storage delete fails to avoid orphaned DB records, 
+        # but log it or handle as needed. Usually better to try/except.
+        print(f"Failed to delete from storage: {e}")
+
+    # 3. Delete word frequencies (manual delete since no cascade is explicitly set in models usually)
+    db.query(WordFrequency).filter(WordFrequency.document_id == doc_id).delete()
+    
+    # 4. Delete document record
+    db.delete(doc)
+    db.commit()
+    
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
