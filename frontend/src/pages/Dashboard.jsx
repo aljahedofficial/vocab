@@ -1,4 +1,4 @@
-import { ArrowRight, Clock, Download, FileDown, FileSpreadsheet, FileText, Languages, Loader2, Users } from "lucide-react";
+import { ArrowRight, Clock, Download, FileDown, FileSpreadsheet, FileText, Languages, Loader2, Sparkles, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import DocumentCharts from "../components/DocumentCharts";
@@ -12,6 +12,7 @@ const Dashboard = () => {
     const [selectedDoc, setSelectedDoc] = useState(null);
     const [docData, setDocData] = useState([]);
     const [dataLoading, setDataLoading] = useState(false);
+    const [translating, setTranslating] = useState(false);
 
     useEffect(() => {
         fetchDocuments();
@@ -53,6 +54,31 @@ const Dashboard = () => {
         { label: "Unique Authors", value: "1", icon: Users, color: "text-green-600", bg: "bg-green-50" },
         { label: "Active Sessions", value: "1", icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
     ];
+
+    const handleBatchTranslate = async () => {
+        if (!selectedDoc || docData.length === 0) return;
+
+        try {
+            setTranslating(true);
+            const wordsToTranslate = docData
+                .filter(item => !item.translation)
+                .slice(0, 50) // Limit to 50 at a time for safety
+                .map(item => item.word);
+
+            if (wordsToTranslate.length === 0) {
+                alert("All words are already translated!");
+                return;
+            }
+
+            await api.post("/translations/batch", { words: wordsToTranslate });
+            await fetchDocData(selectedDoc.id); // Refresh data
+        } catch (err) {
+            console.error("Batch translation failed", err);
+            alert("AI Translation failed. Please try again later.");
+        } finally {
+            setTranslating(false);
+        }
+    };
 
     const handleExport = async (format) => {
         try {
@@ -116,6 +142,23 @@ const Dashboard = () => {
                             <FileDown className="w-5 h-5" />
                             <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none uppercase">PDF</span>
                         </button>
+
+                        <button
+                            onClick={handleBatchTranslate}
+                            disabled={translating}
+                            className={`ml-2 px-6 py-3 rounded-2xl font-bold transition-all shadow-xl flex items-center gap-2 ${translating
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                : "bg-purple-600 hover:bg-purple-700 text-white shadow-purple-100"
+                                }`}
+                        >
+                            {translating ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <Sparkles className="w-5 h-5" />
+                            )}
+                            {translating ? "AI Translating..." : "Translate All (AI)"}
+                        </button>
+
                         <button
                             className="ml-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-xl shadow-blue-100 flex items-center gap-2"
                         >

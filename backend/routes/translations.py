@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List
 from ..database import get_db
 from ..models import UserTranslation, User
-from ..schemas import UserTranslationCreate, UserTranslationResponse, SuggestionResponse
+from ..schemas import UserTranslationCreate, UserTranslationResponse, SuggestionResponse, BatchTranslationRequest
 from .auth import get_current_user
+from deep_translator import GoogleTranslator
 
 router = APIRouter(prefix="/translations", tags=["Translations"])
 
@@ -66,3 +67,48 @@ def get_suggestions(word: str):
         "suggestions": suggestions,
         "is_common": len(suggestions) > 0
     }
+
+@router.post("/batch", response_model=List[UserTranslationResponse])
+def batch_translate(
+    request: BatchTranslationRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    translator = GoogleTranslator(source='en', target='bn')
+    new_translations = []
+
+    # Filter out words already translated by this user
+    existing_words = db.query(UserTranslation.word).filter(
+        UserTranslation.user_id == current_user.id,
+        UserTranslation.word.in_([w.lower() for w in request.words])
+    ).all()
+    existing_word_set = {w[0] for w in existing_words}
+
+    words_to_translate = [w.lower() for w in request.words if w.lower() not in existing_word_set]
+
+    if not words_to_translate:
+        return []
+
+    try:
+        for word in words_to_translate:
+            try:
+                translated = translator.translate(word)
+                if translated:
+                    new_trans = UserTranslation(
+                        user_id=current_user.id,
+                        word=word,
+                        translation=translated
+                    )
+                    db.add(new_trans)
+                    new_translations.append(new_trans)
+            except Exception as e:
+                print(f"Failed to translate {word}: {e}")
+                continue
+        
+        db.commit()
+        for t in new_translations:
+            db.refresh(t)
+            
+        return new_translations
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Translation service failed: {str(e)}")

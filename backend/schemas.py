@@ -61,3 +61,6 @@ class SuggestionResponse(BaseModel):
     word: str
     suggestions: List[str]
     is_common: bool
+
+class BatchTranslationRequest(BaseModel):
+    words: List[str]
