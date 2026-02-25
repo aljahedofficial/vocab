@@ -122,7 +122,7 @@ def batch_translate(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Translation service failed: {str(e)}")
 
-@router.delete("/{translation_id}")
+@router.delete("/item/{translation_id}")
 def delete_translation(
     translation_id: int,
     db: Session = Depends(get_db),

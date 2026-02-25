@@ -1,0 +1,74 @@
+=========================================
+VOCABDASH - FULL APPLICATION DETAILS
+=========================================
+
+VocabDash is a premium, full-stack vocabulary analysis platform designed to help users extract, analyze, and translate significant vocabulary from academic and professional documents.
+
+-----------------------------------------
+1. CORE FUNCTIONALITY & FEATURES
+-----------------------------------------
+
+A. Authentication & Security
+- Secure user signup and login system.
+- JWT (JSON Web Token) authentication with 24-hour expiration.
+- Automatic session protection and logout on token expiration.
+
+B. Intelligent Word Extraction
+- Support for PDF, DOCX, and TXT file formats.
+- Advanced Text Processing Engine:
+    * Automatic tokenization of English and Bengali text.
+    * Frequency analysis (counting how many times a word appears).
+    * Dynamic "Rank" calculation for importance.
+
+C. Smart Filtering (Noise Removal)
+- No-Number Rule: Automatically filters out all digits and dates (e.g., 2022, 19).
+- Minimum Length Rule: Excludes words with 2 or fewer characters (e.g., ma, to, in).
+- Symbol Stripping: Removes all non-alphabetic symbols.
+- Stop Word Filter: Excludes common "filler" words (prepositions, conjunctions, pronouns) in both English and Bengali.
+- Date/Web Noise: Excludes names of months, days of the week, and web terms (gmail, com, http).
+- "Clean & Refresh": Ability to re-process existing documents with updated filtering rules in one click.
+
+D. AI Translation System
+- Automated English-to-Bangla translation via AI (Google Translator engine).
+- Optimized Batch Processing: Translates up to 500 words in a single click for near-instant results.
+- Progress Tracking: Real-time badges showing how many unique words are translated vs. pending.
+
+E. Global "My Dictionary"
+- Centrally stored translations: Once a word is translated (by AI or manually), it is applied globally to all past and future documents.
+- Dictionary Management: A dedicated space to view, search, and delete specific translations from your global knowledge base.
+
+F. Data Visualization & Dashboard
+- Comprehensive Stats: Track Total Documents, Unique Vocabulary, Total Word Hits, and Translation progress.
+- Interactive Table: Real-time search, sorting by Frequency/Word, and manual "Add Meaning" popups.
+
+-----------------------------------------
+2. EXPORT & REPORTING
+-----------------------------------------
+
+- PDF Report: High-quality generated PDF with complex text shaping (uharfbuzz). Supports correct Bengali ligatures (joining characters).
+- Excel Export: Professional .xlsx sheets for data analysis.
+- CSV Export: Standard format for spreadsheet compatibility.
+- Full Report: One-click integrated analysis download.
+
+-----------------------------------------
+3. TECHNICAL ARCHITECTURE
+-----------------------------------------
+
+- Frontend: React.js (Vite), Tailwind CSS, Lucide Icons.
+- Backend: FastAPI (Python), SQLAlchemy ORM.
+- Database: PostgreSQL.
+- Storage: Supabase Storage (S3-compatible) for document hosting.
+- AI Layer: Deep-Translator API (Free & Unlimited).
+- Formatting: FPDF2 with uharfbuzz text-shaper for Bengali Unicode support.
+
+-----------------------------------------
+4. INFRASTRUCTURE & DEPLOYMENT
+-----------------------------------------
+
+- Frontend Hosting: Vercel (Optimized for SPA).
+- Backend Hosting: Render (Web Service).
+- Source Control: GitHub (Auto-deployment pipeline).
+
+=========================================
+Created on: February 26, 2026
+=========================================

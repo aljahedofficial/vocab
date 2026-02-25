@@ -27,11 +27,12 @@ const Translations = () => {
         if (!window.confirm("Are you sure you want to remove this word from your dictionary?")) return;
 
         try {
-            await api.delete(`/translations/${id}`);
+            await api.delete(`/translations/item/${id}`);
             setTranslations(translations.filter(t => t.id !== id));
         } catch (err) {
             console.error("Failed to delete translation", err);
-            alert("Failed to delete. Please try again.");
+            const errorMsg = err.response?.data?.detail || "Please try again.";
+            alert(`Failed to delete: ${errorMsg}`);
         }
     };
 
