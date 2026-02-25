@@ -1,33 +1,14 @@
-import { ArrowUpDown, Languages, Loader2, Search, Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
-import api from "../lib/api";
+import { ArrowUpDown, Languages, Search, Sparkles } from "lucide-react";
+import { useState } from "react";
 import TranslationModal from "./TranslationModal";
 
-const FrequencyTable = ({ docId }) => {
-    const [words, setWords] = useState([]);
-    const [loading, setLoading] = useState(true);
+const FrequencyTable = ({ docId, data, onRefresh }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortConfig, setSortConfig] = useState({ key: "frequency", direction: "desc" });
     const [selectedWord, setSelectedWord] = useState(null);
 
-    useEffect(() => {
-        fetchWords();
-    }, [docId]);
-
-    const fetchWords = async () => {
-        try {
-            setLoading(true);
-            const response = await api.get(`/documents/${docId}/words`);
-            setWords(response.data);
-        } catch (err) {
-            console.error("Failed to fetch words", err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleSaveTranslation = (word, translation) => {
-        setWords(words.map(w => w.word === word ? { ...w, translation } : w));
+    const handleSaveTranslation = async (word, translation) => {
+        if (onRefresh) await onRefresh();
     };
 
     const handleSort = (key) => {
@@ -38,7 +19,7 @@ const FrequencyTable = ({ docId }) => {
         setSortConfig({ key, direction });
     };
 
-    const sortedWords = [...words]
+    const sortedWords = [...(data || [])]
         .filter((w) => w.word.toLowerCase().includes(searchTerm.toLowerCase()))
         .sort((a, b) => {
             if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === "asc" ? -1 : 1;
@@ -46,14 +27,7 @@ const FrequencyTable = ({ docId }) => {
             return 0;
         });
 
-    if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center py-20">
-                <Loader2 className="w-10 h-10 text-blue-600 animate-spin mb-4" />
-                <p className="text-gray-500 font-medium">Analyzing vocabulary...</p>
-            </div>
-        );
-    }
+    if (!data) return null;
 
     return (
         <>
@@ -72,11 +46,11 @@ const FrequencyTable = ({ docId }) => {
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 px-5 py-3 rounded-xl font-bold border border-blue-100">
                             <Languages className="w-4 h-4" />
-                            {words.length} Unique Words
+                            {data.length} Unique Words
                         </div>
                         <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 px-5 py-3 rounded-xl font-bold border border-green-100">
                             <Sparkles className="w-4 h-4" />
-                            {words.filter(w => w.translation).length} Translated
+                            {data.filter(w => w.translation).length} Translated
                         </div>
                     </div>
                 </div>

@@ -195,7 +195,11 @@ const Dashboard = () => {
                         <div className="mb-10 h-80">
                             <WordCloudComponent data={docData} />
                         </div>
-                        <FrequencyTable docId={selectedDoc.id} initialData={docData} />
+                        <FrequencyTable
+                            docId={selectedDoc.id}
+                            data={docData}
+                            onRefresh={() => fetchDocData(selectedDoc.id)}
+                        />
                     </>
                 )}
             </div>
