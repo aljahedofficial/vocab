@@ -12,10 +12,9 @@ passlib[bcrypt]
 python-dotenv
 pandas
 openpyxl
-fpdf2
+fpdf2[shaping]
 pytest
 httpx
 pytest-asyncio
 email-validator
 deep-translator
-uharfbuzz

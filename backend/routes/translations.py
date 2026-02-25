@@ -122,18 +122,24 @@ def batch_translate(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Translation service failed: {str(e)}")
 
-@router.delete("/item/{translation_id}")
+@router.get("/ping")
+def ping_translations():
+    return {"status": "translations router active"}
+
+@router.delete("/delete/{translation_id}")
 def delete_translation(
     translation_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    print(f"Attempting to delete translation {translation_id} for user {current_user.id}")
     translation = db.query(UserTranslation).filter(
         UserTranslation.id == translation_id,
         UserTranslation.user_id == current_user.id
     ).first()
     
     if not translation:
+        print(f"Translation {translation_id} not found in DB")
         raise HTTPException(status_code=404, detail="Translation not found")
         
     db.delete(translation)

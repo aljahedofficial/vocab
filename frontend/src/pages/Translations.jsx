@@ -27,7 +27,7 @@ const Translations = () => {
         if (!window.confirm("Are you sure you want to remove this word from your dictionary?")) return;
 
         try {
-            await api.delete(`/translations/item/${id}`);
+            await api.delete(`/translations/delete/${id}`);
             setTranslations(translations.filter(t => t.id !== id));
         } catch (err) {
             console.error("Failed to delete translation", err);
