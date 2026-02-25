@@ -1,0 +1,649 @@
+# Word Frequency Dashboard - Development Phases (100% Free)
+
+---
+
+## **PHASE 0: SETUP & INFRASTRUCTURE (Week 1)**
+
+### **Task 0.1: Create Project Repositories**
+- [ ] Create GitHub account (free)
+- [ ] Create 2 repositories: `frontend` and `backend`
+- [ ] Set up .gitignore, README files
+
+**Free Tools:** GitHub (free)
+
+---
+
+### **Task 0.2: Set Up Database**
+- [ ] Sign up for **Neon** (free PostgreSQL)
+- [ ] Create database instance
+- [ ] Run initial schema creation script
+- [ ] Test connection
+
+**Free Tools:** Neon (free tier: 3GB storage)
+
+**Commands:**
+```bash
+# Neon connection string format:
+postgresql://user:password@host/database
+```
+
+---
+
+### **Task 0.3: Set Up Backend Server**
+- [ ] Sign up for **Render.com** (free)
+- [ ] Create Web Service (free tier)
+- [ ] Connect GitHub repository (auto-deploy)
+- [ ] Set environment variables (DB connection, API keys)
+
+**Free Tools:** Render.com (750 hours/month free)
+
+---
+
+### **Task 0.4: Set Up Frontend Hosting**
+- [ ] Sign up for **Vercel** (free)
+- [ ] Connect GitHub repository
+- [ ] Enable auto-deployment on push
+
+**Free Tools:** Vercel (free tier: 100GB bandwidth/month)
+
+---
+
+### **Task 0.5: Set Up File Storage**
+- [ ] Sign up for **Supabase** (free alternative to Firebase)
+- [ ] Enable Storage bucket (free: 5GB)
+- [ ] Get API credentials
+- [ ] Test file upload/download
+
+**Free Tools:** Supabase (free tier: 5GB storage)
+
+---
+
+### **Task 0.6: Development Environment**
+- [ ] Install Node.js, Python
+- [ ] Set up local database (PostgreSQL locally or use Neon)
+- [ ] Create `.env` files for secrets
+- [ ] Test backend can run locally
+
+**Deliverable:** All infrastructure ready, GitHub repos connected to Vercel/Render
+
+---
+
+---
+
+## **PHASE 1: MVP - CORE FEATURES (Weeks 2-3)**
+
+### **Task 1.1: Backend - User Authentication**
+- [ ] Create `/users` table (user_id, email, password_hash, created_at)
+- [ ] Implement user signup endpoint
+- [ ] Implement user login endpoint
+- [ ] Add JWT token generation
+- [ ] Add middleware for protected routes
+
+**Technology:** Node.js + Express (or Python + FastAPI)
+
+**Key Endpoints:**
+```
+POST   /api/auth/signup
+POST   /api/auth/login
+POST   /api/auth/logout
+```
+
+**Deliverable:** Users can register and log in
+
+---
+
+### **Task 1.2: Backend - Document Upload & Storage**
+- [ ] Create `/documents` table (document_id, user_id, filename, file_type, upload_date, etc.)
+- [ ] Implement file upload endpoint
+- [ ] Store files in **Supabase Storage**
+- [ ] Validate file types (pdf, docx, txt only)
+- [ ] Validate file size (<50MB)
+
+**Key Endpoints:**
+```
+POST   /api/documents/upload
+GET    /api/documents/list
+DELETE /api/documents/:id
+```
+
+**Libraries:** multer (Node) or werkzeug (Python)
+
+**Deliverable:** Users can upload files, files stored securely
+
+---
+
+### **Task 1.3: Backend - Text Extraction**
+- [ ] Install text extraction libraries:
+  - pdfplumber (PDF)
+  - python-docx (DOCX)
+  - Built-in for TXT
+- [ ] Create text extraction function
+- [ ] Handle encoding detection (UTF-8, Bengali scripts)
+- [ ] Create `/extract` endpoint
+
+**Key Endpoint:**
+```
+POST   /api/documents/:id/extract
+```
+
+**Deliverable:** Extracted text from all file types
+
+---
+
+### **Task 1.4: Backend - Word Tokenization & Frequency**
+- [ ] Create `/words` table (word_id, word_english, word_bangla, is_stop_word)
+- [ ] Create `/word_frequency` table (frequency_id, document_id, word_id, frequency_count, positions)
+- [ ] Create stop words list (English: the, in, for, etc. | Bengali: এবং, এর, এই, etc.)
+- [ ] Implement tokenization function (split text into words)
+- [ ] Implement frequency counting function
+- [ ] Create endpoint to process document and save frequencies
+
+**Key Endpoint:**
+```
+POST   /api/documents/:id/process
+```
+
+**Logic:**
+```
+Extract text → Clean → Tokenize → Remove stop words → Count frequency → Save to DB
+```
+
+**Deliverable:** Word frequencies calculated and stored
+
+---
+
+### **Task 1.5: Backend - Frequency API**
+- [ ] Create GET endpoint to fetch word frequencies by document
+- [ ] Add sorting (by frequency, alphabetical)
+- [ ] Add filtering (by translation status)
+- [ ] Add pagination (show 20 words per page)
+
+**Key Endpoints:**
+```
+GET    /api/documents/:id/words
+GET    /api/documents/:id/words?sort=frequency&order=desc
+GET    /api/documents/:id/words?translated=false
+GET    /api/documents/:id/words?page=1&limit=20
+```
+
+**Deliverable:** API ready to serve word frequency data
+
+---
+
+### **Task 1.6: Frontend - Basic Layout & Navigation**
+- [ ] Set up React project (create-react-app or Vite)
+- [ ] Create main layout (header, sidebar, main content)
+- [ ] Create routing (Dashboard, Upload, Export, Settings)
+- [ ] Add responsive design with Tailwind CSS
+- [ ] Create navigation menu
+
+**Deliverable:** Basic UI shell ready
+
+---
+
+### **Task 1.7: Frontend - Authentication Pages**
+- [ ] Create Login page
+- [ ] Create Signup page
+- [ ] Add form validation
+- [ ] Add error handling
+- [ ] Store JWT token in localStorage
+- [ ] Add logout functionality
+
+**Deliverable:** Users can signup/login/logout
+
+---
+
+### **Task 1.8: Frontend - Upload Page**
+- [ ] Create file upload component
+- [ ] Drag-and-drop functionality
+- [ ] File validation (type, size)
+- [ ] Upload progress indicator
+- [ ] Show uploaded files list
+- [ ] Add delete functionality
+
+**Deliverable:** Users can upload files from UI
+
+---
+
+### **Task 1.9: Frontend - Frequency Tab**
+- [ ] Create word frequency table component
+- [ ] Display columns: Rank, Word, Frequency, Status
+- [ ] Add search functionality
+- [ ] Add sorting (frequency, alphabetical)
+- [ ] Add pagination (load more)
+- [ ] Add loading states
+
+**Deliverable:** Users can view word frequencies with search/sort
+
+---
+
+### **PHASE 1 DELIVERABLE:**
+✅ Users can: Signup → Login → Upload file → See word frequencies
+✅ MVP is functional
+✅ Deploy to free servers (Vercel + Render)
+
+---
+
+---
+
+## **PHASE 2: TRANSLATION & UI POLISH (Weeks 4-5)**
+
+### **Task 2.1: Backend - Translation Database**
+- [ ] Create `/user_translations` table (translation_id, user_id, word_id, custom_bangla)
+- [ ] Add pre-loaded dictionary of common words (optional CSV import)
+- [ ] Create endpoint to fetch meaning for a word
+
+**Key Endpoints:**
+```
+POST   /api/translations/save
+GET    /api/words/:id/meaning
+GET    /api/translations/user
+```
+
+**Deliverable:** Translation storage system ready
+
+---
+
+### **Task 2.2: Backend - Translation Auto-suggestions**
+- [ ] Create pre-populated dictionary with 500-1000 common English words + Bengali translations
+- [ ] Create endpoint to get suggestions for a word
+- [ ] Query dictionary for matching words
+
+**Key Endpoint:**
+```
+GET    /api/words/:id/suggestions
+```
+
+**Sample Data:**
+```
+government -> সরকার, প্রশাসন, রাজ্য
+election -> নির্বাচন, পছন্দ
+policy -> নীতি, নীতিমালা
+```
+
+**Deliverable:** Suggestions work (even if limited initially)
+
+---
+
+### **Task 2.3: Frontend - Translation Modal**
+- [ ] Create edit translation modal component
+- [ ] Show English word (read-only)
+- [ ] Show frequency count
+- [ ] Input field for Bangla meaning
+- [ ] Show suggestions dropdown
+- [ ] Save & Cancel buttons
+- [ ] Keyboard support (Enter to save, Esc to cancel)
+
+**Deliverable:** Users can edit translations via modal
+
+---
+
+### **Task 2.4: Frontend - Translation Tab**
+- [ ] Create dedicated translation management tab
+- [ ] Show all words with their Bengali meanings
+- [ ] Show translation status (✅ Done / ❌ Pending)
+- [ ] Add progress bar (X of Y translated)
+- [ ] Filter chips (All / With Translation / Without Translation)
+- [ ] Inline edit capability (click word to edit)
+- [ ] Save all functionality
+
+**Deliverable:** Full translation management interface
+
+---
+
+### **Task 2.5: Frontend - Bangla Input Support**
+- [ ] Add Bangla keyboard support (phonetic input: sarkar → সরকার)
+- [ ] Use library: **google-input-tools** or **react-bangla-input**
+- [ ] Allow direct Unicode paste
+- [ ] Validate Bengali characters
+
+**Deliverable:** Users can type/input Bengali text easily
+
+---
+
+### **Task 2.6: Frontend - Translation Status Indicators**
+- [ ] Add visual indicators: ✅ Saved / 🔄 Unsaved / ➕ Pending
+- [ ] Add keyboard shortcuts display
+- [ ] Add tooltips for actions
+
+**Deliverable:** Clear UX for translation workflow
+
+---
+
+### **Task 2.7: UI Polish**
+- [ ] Improve table styling (alternating row colors, hover effects)
+- [ ] Add loading skeletons
+- [ ] Add empty states (no documents, no words, etc.)
+- [ ] Add success/error notifications (toast messages)
+- [ ] Improve mobile responsiveness
+- [ ] Add dark mode toggle (optional)
+
+**Deliverable:** Polished, professional UI
+
+---
+
+### **PHASE 2 DELIVERABLE:**
+✅ Users can: View words → Click to add Bangla meaning → Save translations
+✅ Translation workflow complete
+✅ Better UX with feedback and loading states
+
+---
+
+---
+
+## **PHASE 3: CHARTS & EXPORT (Weeks 6-7)**
+
+### **Task 3.1: Frontend - Charts Library Setup**
+- [ ] Install **Recharts** (free, lightweight)
+- [ ] Or use **Chart.js** with react-chartjs-2
+- [ ] Create reusable chart components
+
+**Free Tools:** Recharts (MIT licensed, free)
+
+---
+
+### **Task 3.2: Frontend - Bar Chart**
+- [ ] Create bar chart component showing top 10-20 words
+- [ ] X-axis: word names
+- [ ] Y-axis: frequency count
+- [ ] Interactive tooltips
+- [ ] Responsive design
+
+**Deliverable:** Bar chart tab working
+
+---
+
+### **Task 3.3: Frontend - Word Cloud**
+- [ ] Install **react-d3-cloud** (free)
+- [ ] Create word cloud component
+- [ ] Word size = frequency count
+- [ ] Color gradient by frequency
+- [ ] Interactive (clickable words)
+
+**Free Tools:** react-d3-cloud
+
+**Deliverable:** Word cloud visualization working
+
+---
+
+### **Task 3.4: Frontend - Statistics Card**
+- [ ] Create stats display component
+- [ ] Show:
+  - Total words in document
+  - Unique words
+  - Number translated (X of Y)
+  - Percentage translated
+  - Most frequent word
+  - Average frequency
+
+**Deliverable:** Stats card showing key metrics
+
+---
+
+### **Task 3.5: Backend - Export to PDF**
+- [ ] Install **reportlab** (Python) or **pdfkit** (Node)
+- [ ] Create endpoint: `GET /api/documents/:id/export/pdf`
+- [ ] Generate PDF with:
+  - Document title
+  - Statistics section
+  - Word frequency table (sorted by frequency)
+  - Full word list (alphabetical order)
+  - Bangla translations included
+
+**Free Tools:** reportlab (open source)
+
+**Key Endpoint:**
+```
+GET /api/documents/:id/export/pdf
+```
+
+**Deliverable:** PDF export working
+
+---
+
+### **Task 3.6: Backend - Export to CSV**
+- [ ] Create endpoint: `GET /api/documents/:id/export/csv`
+- [ ] CSV columns: Rank, English, Bangla, Frequency
+- [ ] Downloadable file
+
+**Key Endpoint:**
+```
+GET /api/documents/:id/export/csv
+```
+
+**Deliverable:** CSV export working
+
+---
+
+### **Task 3.7: Backend - Export to Excel**
+- [ ] Install **openpyxl** (Python) or **exceljs** (Node)
+- [ ] Create endpoint: `GET /api/documents/:id/export/excel`
+- [ ] Formatted Excel file with:
+  - Headers with background color
+  - Sortable columns
+  - Frozen header row
+  - Auto-adjusted column widths
+
+**Free Tools:** openpyxl (open source)
+
+**Key Endpoint:**
+```
+GET /api/documents/:id/export/excel
+```
+
+**Deliverable:** Excel export working
+
+---
+
+### **Task 3.8: Frontend - Export UI**
+- [ ] Create export dropdown/menu in sidebar or toolbar
+- [ ] Buttons for:
+  - Export as PDF
+  - Export as CSV
+  - Export as Excel
+- [ ] Show download progress
+- [ ] Auto-trigger download
+
+**Deliverable:** Users can export in 3 formats
+
+---
+
+### **PHASE 3 DELIVERABLE:**
+✅ Charts tab: Bar chart + Word cloud + Stats
+✅ Export in 3 formats: PDF, CSV, Excel
+✅ Full webapp feature-complete
+
+---
+
+---
+
+## **PHASE 4: TESTING & OPTIMIZATION (Week 8)**
+
+### **Task 4.1: Backend Testing**
+- [ ] Write unit tests for:
+  - Text extraction
+  - Tokenization
+  - Frequency counting
+  - Authentication
+- [ ] Test all API endpoints
+- [ ] Test error handling
+
+**Tools:** pytest (Python), Jest (Node)
+
+---
+
+### **Task 4.2: Frontend Testing**
+- [ ] Test component rendering
+- [ ] Test form validation
+- [ ] Test API calls
+- [ ] Test error states
+
+**Tools:** Jest + React Testing Library
+
+---
+
+### **Task 4.3: Performance Optimization**
+- [ ] Optimize database queries (add indexes)
+- [ ] Lazy load images/components
+- [ ] Minimize bundle size
+- [ ] Cache API responses (optional)
+- [ ] Compress files before storage
+
+---
+
+### **Task 4.4: Security Checklist**
+- [ ] Validate all inputs (prevent SQL injection, XSS)
+- [ ] Use HTTPS everywhere (Vercel/Render handle this)
+- [ ] Sanitize file uploads
+- [ ] Protect API routes with authentication
+- [ ] Use environment variables for secrets
+- [ ] Rate limiting on API endpoints (optional)
+
+---
+
+### **Task 4.5: User Testing**
+- [ ] Get feedback from 3-5 beta users
+- [ ] Test upload/translation/export workflow
+- [ ] Fix bugs found
+- [ ] Document issues & improvements
+
+---
+
+### **PHASE 4 DELIVERABLE:**
+✅ Tests written and passing
+✅ Security hardened
+✅ Performance optimized
+✅ Ready for public launch
+
+---
+
+---
+
+## **PHASE 5: DEPLOYMENT & LAUNCH (Week 9)**
+
+### **Task 5.1: Final Configuration**
+- [ ] Set up environment variables in Vercel, Render
+- [ ] Configure database backups (Neon handles this)
+- [ ] Set up error logging (optional: Sentry free tier)
+- [ ] Test all endpoints in production
+- [ ] Set up monitoring (optional)
+
+---
+
+### **Task 5.2: Documentation**
+- [ ] Write README (features, setup, usage)
+- [ ] Create user guide/tutorial (in-app or external)
+- [ ] Document API endpoints
+- [ ] Create troubleshooting guide
+
+---
+
+### **Task 5.3: Analytics (Optional)**
+- [ ] Add Google Analytics (free)
+- [ ] Track: uploads, exports, user signups
+- [ ] Monitor errors
+
+**Free Tools:** Google Analytics
+
+---
+
+### **Task 5.4: Marketing & Launch**
+- [ ] Create landing page
+- [ ] Share on GitHub (make repo public)
+- [ ] Post on Reddit, Product Hunt, etc.
+- [ ] Collect feedback
+
+---
+
+### **Task 5.5: Post-Launch Monitoring**
+- [ ] Monitor server logs
+- [ ] Check database storage usage
+- [ ] Monitor bandwidth usage
+- [ ] Fix bugs reported by users
+- [ ] Plan Phase 2 improvements (if needed)
+
+---
+
+### **PHASE 5 DELIVERABLE:**
+✅ Live webapp at custom domain (optional)
+✅ Users can access and use
+✅ Monitoring in place
+✅ Ready for user feedback
+
+---
+
+---
+
+## **TIMELINE SUMMARY**
+
+| Phase | Duration | Focus |
+|-------|----------|-------|
+| **Phase 0** | Week 1 | Infrastructure setup |
+| **Phase 1** | Weeks 2-3 | MVP - Upload + Word Frequency |
+| **Phase 2** | Weeks 4-5 | Translation interface |
+| **Phase 3** | Weeks 6-7 | Charts + Export |
+| **Phase 4** | Week 8 | Testing + Optimization |
+| **Phase 5** | Week 9 | Launch + Monitoring |
+| **TOTAL** | ~9 weeks | Complete, production-ready app |
+
+---
+
+---
+
+## **FREE STACK RECAP**
+
+| Component | Free Service | Limits |
+|-----------|--------------|--------|
+| **Frontend** | Vercel | 100GB bandwidth/month |
+| **Backend** | Render | 750 hours/month |
+| **Database** | Neon | 3GB storage |
+| **File Storage** | Supabase | 5GB storage |
+| **Code Hosting** | GitHub | Unlimited |
+| **Charts** | Recharts | Free library |
+| **Word Cloud** | react-d3-cloud | Free library |
+| **PDF Export** | reportlab | Free library |
+| **Excel Export** | openpyxl | Free library |
+| **Analytics** | Google Analytics | Free |
+
+**Total Cost: $0** ✅
+
+---
+
+---
+
+## **RESOURCES NEEDED**
+
+### **Time**
+- 1 developer: ~9 weeks (full-time)
+- 2 developers: ~5 weeks (parallel work)
+- Part-time: ~15-20 weeks
+
+### **Skills**
+- Frontend: React, Tailwind CSS, JavaScript
+- Backend: Node.js/Python, SQL, API design
+- DevOps: Basic (git, environment variables, deployment)
+
+### **Hardware**
+- Laptop with 8GB+ RAM
+- Internet connection
+- Code editor (VS Code - free)
+
+---
+
+---
+
+## **SUCCESS METRICS**
+
+By end of Phase 5:
+
+✅ Users can upload documents (PDF, DOCX, TXT)
+✅ App analyzes word frequency automatically
+✅ Users can add Bengali translations
+✅ View results in table, charts, word cloud
+✅ Export to PDF, CSV, Excel
+✅ Fully functional, deployed, live
+✅ Zero hosting costs
+
+---
+
+**Ready to start?** Begin with Phase 0! 🚀

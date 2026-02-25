@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+sqlalchemy
+psycopg2-binary
+supabase
+pdfplumber
+python-docx
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+pandas
+openpyxl
+reportlab
