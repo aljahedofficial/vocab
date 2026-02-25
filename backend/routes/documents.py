@@ -222,17 +222,21 @@ def delete_document(
     
     # 2. Remove from Supabase Storage
     try:
+        # Supabase storage.remove expects a list of paths
         supabase.storage.from_("documents").remove([doc.storage_path])
     except Exception as e:
-        # We continue even if storage delete fails to avoid orphaned DB records, 
-        # but log it or handle as needed. Usually better to try/except.
-        print(f"Failed to delete from storage: {e}")
+        print(f"Non-critical Storage Error: {str(e)}")
+        # We continue so the user can at least remove the entry from the UI
 
-    # 3. Delete word frequencies (manual delete since no cascade is explicitly set in models usually)
-    db.query(WordFrequency).filter(WordFrequency.document_id == doc_id).delete()
-    
-    # 4. Delete document record
-    db.delete(doc)
-    db.commit()
+    try:
+        # 3. Delete word frequencies (Explicit delete for safety)
+        db.query(WordFrequency).filter(WordFrequency.document_id == doc_id).delete(synchronize_session=False)
+        
+        # 4. Delete document record
+        db.delete(doc)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database deletion failed: {str(e)}")
     
     return Response(status_code=status.HTTP_204_NO_CONTENT)
