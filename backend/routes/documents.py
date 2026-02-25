@@ -211,12 +211,10 @@ def export_document_data(
             pdf.cell(40, 10, str(row["Frequency"]), border=1)
             
             translation = str(row["Translation"])
-            # In fpdf2, standard strings work if the font supports it
             pdf.cell(70, 10, translation if translation != "-" else "", border=1)
             pdf.ln()
-            
         return Response(
-            content=pdf.output(dest="S"),
+            content=bytes(pdf.output()),
             media_type="application/pdf",
             headers={"Content-Disposition": f"attachment; filename={doc.filename}_analysis.pdf"}
         )

@@ -62,7 +62,7 @@ const Dashboard = () => {
             setTranslating(true);
             const wordsToTranslate = docData
                 .filter(item => !item.translation)
-                .slice(0, 50) // Limit to 50 at a time for safety
+                .slice(0, 500) // Increased for fewer clicks
                 .map(item => item.word);
 
             if (wordsToTranslate.length === 0) {
@@ -176,6 +176,7 @@ const Dashboard = () => {
                         </button>
 
                         <button
+                            onClick={() => handleExport('pdf')}
                             className="ml-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-xl shadow-blue-100 flex items-center gap-2"
                         >
                             <Download className="w-5 h-5" />
